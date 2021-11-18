@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import React from 'react';
 import * as d3 from 'd3';
-import { ticks } from 'd3';
 
 class App extends Component {
 
@@ -37,8 +36,6 @@ class App extends Component {
 
   render() {
     const {  temperatures  } = this.state
-
-    console.log(temperatures)
     
     let dimensions = {
       width: window.innerWidth * 0.9,
@@ -66,23 +63,13 @@ class App extends Component {
     const yAccessor = d => d.temperature
     const xAccessor = d => d.date
 
-    console.log("Temperatura: " + yAccessor(temperatures[0]))
-
     const yScale = d3.scaleLinear()
-                    .domain([40, 0]) // max and min values of temperatures
+                    .domain([0, 40]) // min and max values of temperatures
                     .range([dimensions.boundedHeight, 0]) // max and min values of the axis
-
-    console.log("Temperatura Convertida para px: " + yScale(yAccessor(temperatures[0])))
 
     const xScale = d3.scaleTime()
       .domain(d3.extent(temperatures, xAccessor))
       .range([0, dimensions.boundedWidth])
-
-      console.log("Data: " + xAccessor(temperatures[0]))
-      console.log("Data Convertida para px: " + xScale(xAccessor(temperatures[0])))
-    // const lineGenerator = d3.line()
-    //                         .x(d => xScale(xAccessor(d)))
-    //                         .y(d => yScale(yAccessor(d)))
     
     const pathGenerator = (temperatures) => {
       let path = `M ${xScale(temperatures[0].date)} ${yScale(temperatures[0].temperature)}`
@@ -99,13 +86,11 @@ class App extends Component {
         // console.log("reverse ticks: ", reversedTicks)
         let new_ticks = []
         for (let i in ticks) {
-            new_ticks.push({"text": reversedTicks[i], "scaledValue": yScale(ticks[i])})
+            new_ticks.push({"text": reversedTicks[i].toString(), "scaledValue": yScale(ticks[i].toString())})
         }
         return new_ticks
     }
-    // console.log(yScale.ticks())
-    // console.log(yScale.ticks().sort((a, b) => a - b))
-    // yAxisTicksGenerator()
+    
     return (
       <svg width={dimensions.width} height={dimensions.height}>
 
@@ -135,16 +120,24 @@ class App extends Component {
             
             {
               yAxisTicksGenerator().map(tick => 
-                  <>
-                    <line 
-                      key={ tick.text + 1 }
-                      
-                      y2={ -10 } 
-                    >
-                    </line>
+                <>
+                  <text key={ tick.text } 
+                        x={ -15 } 
+                        y={ tick.scaledValue + 3 }
+                        style={{
+                          fontSize: "10px",
+                          textAnchor: "middle"
+                        }}> { tick.text } </text>
 
-                    <text key={ tick.text } x={ -25 } y={ tick.scaledValue }> { tick.text } </text>
-                  </>
+                  <line 
+                    key={ tick.scaledValue === 0 ? '-1' : tick.scaledValue }
+                    x1={ 0 }
+                    y1={ tick.scaledValue }
+                    x2={ -8 }
+                    y2={ tick.scaledValue }
+                    stroke='black'
+                  />
+                </>
               )
             }
 

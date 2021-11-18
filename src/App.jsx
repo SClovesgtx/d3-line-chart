@@ -1,7 +1,15 @@
 import { Component } from 'react';
+import React from 'react';
 import * as d3 from 'd3';
+import { ticks } from 'd3';
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+
   state = {
     temperatures: [{"id": "2020/01/01", "date": new Date(2020, 1, 1), "temperature": 20}]
   }
@@ -84,19 +92,64 @@ class App extends Component {
       }
       return path
     }
-    // console.log(lineGenerator(temperatures[9]))
+    const yAxisTicksGenerator = () => {
+        const ticks = yScale.ticks()
+        const reversedTicks = [...ticks].sort((a, b) => a - b)
+        // console.log("ticks: ", ticks)
+        // console.log("reverse ticks: ", reversedTicks)
+        let new_ticks = []
+        for (let i in ticks) {
+            new_ticks.push({"text": reversedTicks[i], "scaledValue": yScale(ticks[i])})
+        }
+        return new_ticks
+    }
+    // console.log(yScale.ticks())
+    // console.log(yScale.ticks().sort((a, b) => a - b))
+    // yAxisTicksGenerator()
     return (
       <svg width={dimensions.width} height={dimensions.height}>
+
         <g style={ styles }>
-           { <path 
+           {/* Desenhando a linha que representa as temperaturas*/}
+           { 
+              <path 
                 d={ pathGenerator(temperatures) } 
-                stroke="black"
                 fill="none"
                 stroke="#af9358"
                 strokeWidth="2"
-              ></path> }      
-           {/* { <path d="M 0 0 L 100 0 L 100 100 L 0 50 Z"></path>} */}
+              >
+
+              </path> 
+            }  
+            {/* Desenhando a linha do eixo Y */}
+            { 
+              <path 
+                d={ `M 0 0 L 0 ${dimensions.boundedHeight}` } 
+                stroke="black"
+                fill="none"
+                strokeWidth="1"
+              >
+
+              </path> 
+            }   
+            
+            {
+              yAxisTicksGenerator().map(tick => 
+                  <>
+                    <line 
+                      key={ tick.text + 1 }
+                      
+                      y2={ -10 } 
+                    >
+                    </line>
+
+                    <text key={ tick.text } x={ -25 } y={ tick.scaledValue }> { tick.text } </text>
+                  </>
+              )
+            }
+
         </g>
+        
       </svg>
     )
   }

@@ -124,6 +124,8 @@ class App extends Component {
                 y={ dimensions.boundedHeight/2 }
                 style={{
                   fontSize: "12px",
+                  fontFamily: 'Droid serif',
+                  fontStyle: "italic",
                   textAnchor: "middle"
                 }}
               >°C</text>
@@ -134,7 +136,8 @@ class App extends Component {
                 y={ 10 }
                 style={{
                   textAnchor: "middle",
-                  fontSize: "16px"
+                  fontSize: "16px",
+                  fontFamily: 'Playfair Display',
                 }}
               >Temperaturas de Florianópolis em 2020</text>
             }

@@ -1,6 +1,9 @@
 import { Component } from 'react';
 import React from 'react';
+import Tippy from '@tippyjs/react';
 import * as d3 from 'd3';
+import './App.css';
+import 'tippy.js/dist/tippy.css';
 
 class App extends Component {
 
@@ -60,7 +63,7 @@ class App extends Component {
         transform: `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)` 
     };
  
-    // const yAccessor = d => d.temperature
+    const yAccessor = d => d.temperature
     const xAccessor = d => d.date
 
     const yScale = d3.scaleLinear()
@@ -103,6 +106,14 @@ class App extends Component {
       return ticks
     }
 
+    const dateConvertStringFormat = (date) => {
+      
+      const mnth = ("0" + (date.getMonth() + 1)).slice(-2)
+      const day = ("0" + date.getDate()).slice(-2)
+      return [date.getFullYear(), mnth, day].join("-")
+    }
+
+    const [ minTemperature, maxTemperature ] = d3.extent(temperatures, yAccessor)
     return (
       <svg width={dimensions.width} height={dimensions.height}>
 
@@ -118,6 +129,24 @@ class App extends Component {
 
               </path> 
             } 
+            {
+              temperatures.map(d => {
+
+                if (d.temperature === maxTemperature || d.temperature === minTemperature){
+                  return (
+                        <Tippy content={`Temperatura: ${d.temperature} °C Data: ${dateConvertStringFormat(d.date)}`}>
+                          <circle
+                            cx={ xScale(d.date) }
+                            cy={ yScale(d.temperature) }
+                            r="3"
+                            fill={d.temperature === maxTemperature ? "#de5454": "#5e9de6"}
+                          />
+                        </Tippy>
+                  )
+                }
+
+              })
+            }
             {
               <text
                 x={ -35 } 

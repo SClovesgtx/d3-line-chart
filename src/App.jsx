@@ -60,7 +60,7 @@ class App extends Component {
         transform: `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)` 
     };
  
-    const yAccessor = d => d.temperature
+    // const yAccessor = d => d.temperature
     const xAccessor = d => d.date
 
     const yScale = d3.scaleLinear()
@@ -90,7 +90,19 @@ class App extends Component {
         }
         return new_ticks
     }
-    
+
+    const xAxisTicksGenerator = () => {
+      const months = ["2020", "Fevereiro", "Março", 
+                      "Abril", "Maio", "Junho", "Julho", 
+                      "Agosto", "Setembro", "Outubro", 
+                      "Novembro", "Dezembro"];
+      const ticks = xScale.ticks().map(d => {
+                                          return {"month": months[d.getMonth()], 
+                                                  "scaledValue": xScale(d)}
+                                       })
+      return ticks
+    }
+
     return (
       <svg width={dimensions.width} height={dimensions.height}>
 
@@ -105,7 +117,27 @@ class App extends Component {
               >
 
               </path> 
-            }  
+            } 
+            {
+              <text
+                x={ -35 } 
+                y={ dimensions.boundedHeight/2 }
+                style={{
+                  fontSize: "12px",
+                  textAnchor: "middle"
+                }}
+              >°C</text>
+            } 
+            {
+              <text
+                x={ dimensions.boundedWidth/2 } 
+                y={ 10 }
+                style={{
+                  textAnchor: "middle",
+                  fontSize: "16px"
+                }}
+              >Temperaturas de Florianópolis em 2020</text>
+            }
             {/* Desenhando a linha do eixo Y */}
             { 
               <path 
@@ -121,7 +153,7 @@ class App extends Component {
             {
               yAxisTicksGenerator().map(tick => 
                 <>
-                  <text key={ tick.text } 
+                  <text key={ tick.text + "-text" } 
                         x={ -15 } 
                         y={ tick.scaledValue + 3 }
                         style={{
@@ -130,11 +162,44 @@ class App extends Component {
                         }}> { tick.text } </text>
 
                   <line 
-                    key={ tick.scaledValue === 0 ? '-1' : tick.scaledValue }
+                    key={ tick.text + "-line" }
                     x1={ 0 }
                     y1={ tick.scaledValue }
-                    x2={ -8 }
+                    x2={ -5 }
                     y2={ tick.scaledValue }
+                    stroke='black'
+                  />
+                </>
+              )
+            }
+            {/* Desenhando a linha do eixo X */}
+            { 
+              <path 
+                d={ `M 0 ${dimensions.boundedHeight} H ${dimensions.boundedHeight} ${dimensions.boundedWidth}` }
+                stroke="black"
+                fill="none"
+                strokeWidth="1"
+              >
+
+              </path> 
+            }   
+            {
+              xAxisTicksGenerator().map(tick => 
+                <>
+                  <text key={ tick.month + "-text" } 
+                        x={ tick.scaledValue } 
+                        y={ dimensions.boundedHeight + 17 }
+                        style={{
+                          fontSize: "10px",
+                          textAnchor: "middle"
+                        }}> { tick.month } </text>
+
+                  <line 
+                    key={ tick.month + "-line" }
+                    x1={ tick.scaledValue }
+                    y1={ dimensions.boundedHeight }
+                    x2={ tick.scaledValue }
+                    y2={ dimensions.boundedHeight + 5 }
                     stroke='black'
                   />
                 </>

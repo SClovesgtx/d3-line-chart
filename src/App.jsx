@@ -23,7 +23,7 @@ class App extends Component {
   
 
   loadDataSet = async () => {
-    const dataset = await d3.csv("./2020_floripa_temperature_by_day.csv")
+    const dataset = await d3.csv("./data/2020_floripa_temperature_by_day.csv")
     //const dates = dataset.map(row => new Date(row.data))
     const temperatures = dataset.map( (row) => {
                                           return {"temperature": parseFloat(row.temperatura).toFixed(2),

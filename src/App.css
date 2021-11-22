@@ -1,4 +1,9 @@
-circle:hover {
-    r: 8;
-    opacity: 0.4;
+.chartContainer {
+    margin-top: 30px;
+}
+
+.choicesContainer {
+    margin-left: 60px;
+    display: flex;
+    gap: 8px;
 }

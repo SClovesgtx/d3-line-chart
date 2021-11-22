@@ -9,8 +9,9 @@ import 'tippy.js/dist/tippy.css';
 class App extends Component {
   state = {
     temperatures: [{"id": "2020/01/01", "date": new Date(2020, 1, 1), "temperature": 20}],
-    selectYear: 2020
+    selectYear: 2020,
   }
+
 
   componentDidMount() {
     this.loadDataSet()
@@ -48,6 +49,9 @@ class App extends Component {
       },
     }
 
+    const years = ['2004', '2005', '2006', '2007', '2008', '2009', '2010', 
+      '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'].sort((a, b) => b-a)
+
     dimensions.boundedWidth = dimensions.width
         - dimensions.margin.left
         - dimensions.margin.right
@@ -72,7 +76,7 @@ class App extends Component {
 
     return (
       <>
-      <div>
+      <div className="chartContainer">
         <svg width={dimensions.width} height={dimensions.height}>
 
           <g style={ styles }>
@@ -89,7 +93,26 @@ class App extends Component {
         </svg>
       </div>
 
-      <div>
+      <div className="chartContainer">
+        <div className="choicesContainer">
+          <label>
+            <input type="checkbox" />
+            Max
+          </label>
+          <label>
+            <input type="checkbox" />
+            Min
+          </label>
+          <label>
+            <input type="checkbox" />
+            Avg
+          </label>
+          
+          <select name="Years" className='selectorContainer'>
+            {years.map(year => <option value={year}>{year}</option>)}
+          </select>
+         
+        </div>
         <svg width={dimensions.width} height={dimensions.height}>
 
           <g style={ styles }>

@@ -8,7 +8,9 @@ import 'tippy.js/dist/tippy.css';
 
 class App extends Component {
   state = {
-    temperatures: [{"id": "2020/01/01", "date": new Date(2020, 1, 1), "temperature": 20}],
+    isFechting: true,
+    allData: [],
+    temperatures: [],
     selectYear: 2020,
   }
 
@@ -16,7 +18,6 @@ class App extends Component {
   componentDidMount() {
     this.loadDataSet()
   }
-
 
   loadDataSet = async () => {
     const dataset = await d3.csv("./data/floripa_temperatures_by_day_2004_to_2020.csv")
@@ -31,13 +32,25 @@ class App extends Component {
                                        }
                                 )
     this.setState({
-      temperatures: temperatures.filter(d => d.date.getFullYear() === this.state.selectYear)
+      allData: temperatures,
+      temperatures: temperatures.filter(d => d.date.getFullYear() === this.state.selectYear),
+      isFechting: false
+    })
+  }
+
+
+  handleYearChoice = (event) => {
+    const year = Number(event.target.value)
+    this.setState({
+      selectYear: year,
+      temperatures: this.state.allData.filter(d => d.date.getFullYear() === year)
     })
   }
 
 
   render() {
-    const {  temperatures  } = this.state
+    const { selectYear, temperatures, isFechting } = this.state
+    console.log("Ano selecionado 1:", selectYear)
     let dimensions = {
       width: window.innerWidth * 0.9,
       height: 400,
@@ -48,9 +61,9 @@ class App extends Component {
         left: 60,
       },
     }
-
-    const years = ['2004', '2005', '2006', '2007', '2008', '2009', '2010', 
-      '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'].sort((a, b) => b-a)
+    const columns = ['mean_temperature'] //, 'max_temperature', 'min_temperature']
+    const years = ['2010', '2011', '2012', '2013', '2014', '2015', 
+      '2016', '2017', '2018', '2019', '2020'].sort((a, b) => b-a)
 
     dimensions.boundedWidth = dimensions.width
         - dimensions.margin.left
@@ -74,25 +87,9 @@ class App extends Component {
       .domain(d3.extent(temperatures, xAccessor))
       .range([0, dimensions.boundedWidth])
 
-    return (
+    
+    return isFechting ? <p>Loading...</p>: (
       <>
-      <div className="chartContainer">
-        <svg width={dimensions.width} height={dimensions.height}>
-
-          <g style={ styles }>
-
-            <LineChart1 
-              temperatures={ temperatures }  
-              xScale={ xScale } 
-              yScale={ yScale } 
-              dimensions={ dimensions }
-            />
-
-          </g>
-
-        </svg>
-      </div>
-
       <div className="chartContainer">
         <div className="choicesContainer">
           <label>
@@ -108,7 +105,7 @@ class App extends Component {
             Avg
           </label>
           
-          <select name="Years" className='selectorContainer'>
+          <select name="Years" className='selectorContainer' onChange={this.handleYearChoice}>
             {years.map(year => <option value={year}>{year}</option>)}
           </select>
          
@@ -118,11 +115,12 @@ class App extends Component {
           <g style={ styles }>
 
             <LineChart2
+              selectYear ={ selectYear }
               temperatures={ temperatures }  
               xScale={ xScale } 
               yScale={ yScale } 
               dimensions={ dimensions }
-              columns={ ['mean_temperature', 'max_temperature', 'min_temperature'] }
+              columns={ columns }
             />
 
           </g>

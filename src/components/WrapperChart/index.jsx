@@ -1,6 +1,6 @@
 export const WrapperChart = (props) =>{
-    const { xScale, yScale, dimensions } = props;
-
+    const {selectYear, xScale, yScale, dimensions } = props;
+    console.log("Ano selecionado 3:", selectYear)
     const yAxisTicksGenerator = () => {
         const ticks = yScale.ticks()
         const reversedTicks = [...ticks].sort((a, b) => a - b)
@@ -12,7 +12,7 @@ export const WrapperChart = (props) =>{
     }
 
     const xAxisTicksGenerator = () => {
-      const months = ["2020", "Fevereiro", "Março",
+      const months = ["Janeiro", "Fevereiro", "Março",
                       "Abril", "Maio", "Junho", "Julho",
                       "Agosto", "Setembro", "Outubro",
                       "Novembro", "Dezembro"];
@@ -46,7 +46,7 @@ export const WrapperChart = (props) =>{
                   fontSize: "16px",
                   fontFamily: 'Playfair Display',
                 }}
-              >Temperaturas de Florianópolis em 2020</text>
+              >Temperaturas de Florianópolis em {selectYear}</text>
             }
             {/* Desenhando a linha do eixo Y */}
             {

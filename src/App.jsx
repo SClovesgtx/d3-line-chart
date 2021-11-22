@@ -7,12 +7,6 @@ import './App.css';
 import 'tippy.js/dist/tippy.css';
 
 class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-  }
-
   state = {
     temperatures: [{"id": "2020/01/01", "date": new Date(2020, 1, 1), "temperature": 20}]
   }
@@ -84,7 +78,7 @@ class App extends Component {
 
            {/* The bounds contain all of our data elements: in this case, our line.*/}
           <BoundsChart temperatures={ temperatures } xScale={ xScale } yScale={ yScale }/>
-          
+
         </g>
 
       </svg>

@@ -4,17 +4,20 @@ import './styles.css'
 import 'tippy.js/dist/tippy.css';
 
 export const BoundsChart = (props) => {
-    const { temperatures, xScale, yScale } = props;
+    const { temperatures, xScale, yScale, temperatureKind } = props;
 
-    const yAccessor = d => d.temperature
+    const strokeColor = temperatureKind === 'min_temperature' ? '#34cfeb' : 
+                        temperatureKind === 'max_temperature' ? '#f5390a' : '#af9358';
+
+    const yAccessor = d => d[temperatureKind]
 
     const [ minTemperature, maxTemperature ] = d3.extent(temperatures, yAccessor)
 
     const linePathGenerator = (temperatures) => {
-        let path = `M ${xScale(temperatures[0].date)} ${yScale(temperatures[0].temperature)}`
+        let path = `M ${xScale(temperatures[0].date)} ${yScale(temperatures[0][temperatureKind])}`
         for (let i = 1; i < temperatures.length; i++) {
           let row = temperatures[i]
-          path += ` L ${xScale(row.date)} ${yScale(row.temperature)}`
+          path += ` L ${xScale(row.date)} ${yScale(row[temperatureKind])}`
         }
         return path
       }
@@ -30,7 +33,7 @@ export const BoundsChart = (props) => {
             <path 
                 d={ linePathGenerator(temperatures) } 
                 fill="none"
-                stroke="#af9358"
+                stroke={ strokeColor }
                 strokeWidth="2"
             >
 
@@ -38,14 +41,14 @@ export const BoundsChart = (props) => {
             {
                 temperatures.map(d => {
 
-                if (d.temperature === maxTemperature || d.temperature === minTemperature){
+                if (d[temperatureKind] === maxTemperature || d[temperatureKind] === minTemperature){
                     return (
-                        <Tippy content={`Temperatura: ${d.temperature} °C Data: ${dateConvertStringFormat(d.date)}`}>
+                        <Tippy content={`Temperatura: ${d[temperatureKind]} °C Data: ${dateConvertStringFormat(d.date)}`}>
                             <circle
                             cx={ xScale(d.date) }
-                            cy={ yScale(d.temperature) }
+                            cy={ yScale(d[temperatureKind]) }
                             r="3"
-                            fill={d.temperature === maxTemperature ? "#de5454": "#5e9de6"}
+                            fill={d[temperatureKind] === maxTemperature ? "#de5454": "#5e9de6"}
                             />
                         </Tippy>
                     )

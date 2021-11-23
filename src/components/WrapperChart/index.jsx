@@ -1,120 +1,157 @@
-export const WrapperChart = (props) =>{
-    const {selectYear, xScale, yScale, dimensions } = props;
-    console.log("Ano selecionado 3:", selectYear)
-    const yAxisTicksGenerator = () => {
-        const ticks = yScale.ticks()
-        const reversedTicks = [...ticks].sort((a, b) => a - b)
-        let new_ticks = []
-        for (let i in ticks) {
-            new_ticks.push({"text": reversedTicks[i].toString(), "scaledValue": yScale(ticks[i].toString())})
-        }
-        return new_ticks
+import PropTypes from 'prop-types';
+import React from 'react';
+
+export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
+  const yAxisTicksGenerator = () => {
+    const ticks = yScale.ticks();
+    const reversedTicks = [...ticks].sort((a, b) => a - b);
+    let new_ticks = [];
+    for (let i in ticks) {
+      new_ticks.push({ text: reversedTicks[i].toString(), scaledValue: yScale(ticks[i].toString()) });
     }
+    return new_ticks;
+  };
 
-    const xAxisTicksGenerator = () => {
-      const months = ["Janeiro", "Fevereiro", "Março",
-                      "Abril", "Maio", "Junho", "Julho",
-                      "Agosto", "Setembro", "Outubro",
-                      "Novembro", "Dezembro"];
-      const ticks = xScale.ticks().map(d => {
-                                          return {"month": months[d.getMonth()],
-                                                  "scaledValue": xScale(d)}
-                                       })
-      return ticks
-    }
+  const xAxisTicksGenerator = () => {
+    const months = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
+    const ticks = xScale.ticks().map((d) => {
+      return { month: months[d.getMonth()], scaledValue: xScale(d) };
+    });
+    return ticks;
+  };
 
-    return (
-        <>
-            {
-              <text
-                x={ -35 }
-                y={ dimensions.boundedHeight/2 }
-                style={{
-                  fontSize: "12px",
-                  fontFamily: 'Droid serif',
-                  fontStyle: "italic",
-                  textAnchor: "middle"
-                }}
-              >°C</text>
-            }
-            {
-              <text
-                x={ dimensions.boundedWidth/2 }
-                y={ 10 }
-                style={{
-                  textAnchor: "middle",
-                  fontSize: "16px",
-                  fontFamily: 'Playfair Display',
-                }}
-              >Temperaturas de Florianópolis em {selectYear}</text>
-            }
-            {/* Desenhando a linha do eixo Y */}
-            {
-              <path
-                d={ `M 0 0 L 0 ${dimensions.boundedHeight}` }
-                stroke="black"
-                fill="none"
-                strokeWidth="1"
-              >
+  return (
+    <>
+      {
+        <text
+          key="y-legend"
+          x={-35}
+          y={dimensions.boundedHeight / 2}
+          style={{
+            fontSize: '12px',
+            fontFamily: 'Droid serif',
+            fontStyle: 'italic',
+            textAnchor: 'middle',
+          }}
+        >
+          °C
+        </text>
+      }
+      {
+        <text
+          key="chart-title"
+          x={dimensions.boundedWidth / 2}
+          y={10}
+          style={{
+            textAnchor: 'middle',
+            fontSize: '16px',
+            fontFamily: 'Playfair Display',
+          }}
+        >
+          Temperaturas de Florianópolis em {selectYear}
+        </text>
+      }
+      {/* Desenhando a linha do eixo Y */}
+      {
+        <path
+          key="y-axis-path"
+          d={`M 0 0 L 0 ${dimensions.boundedHeight}`}
+          stroke="black"
+          fill="none"
+          strokeWidth="1"
+        ></path>
+      }
 
-              </path>
-            }
+      {yAxisTicksGenerator().map((tick) => (
+        <React.Fragment key={'y-' + tick.text}>
+          <text
+            key={'y' + tick.text + '-text'}
+            x={-15}
+            y={tick.scaledValue + 3}
+            style={{
+              fontSize: '10px',
+              textAnchor: 'middle',
+            }}
+          >
+            {tick.text}
+          </text>
 
-            {
-              yAxisTicksGenerator().map(tick =>
-                <>
-                  <text key={ tick.text + "-text" }
-                        x={ -15 }
-                        y={ tick.scaledValue + 3 }
-                        style={{
-                          fontSize: "10px",
-                          textAnchor: "middle"
-                        }}> { tick.text } </text>
+          <line
+            key={'y' + tick.text + '-line'}
+            x1={0}
+            y1={tick.scaledValue}
+            x2={-5}
+            y2={tick.scaledValue}
+            stroke="black"
+          />
+        </React.Fragment>
+      ))}
+      {/* Desenhando a linha do eixo X */}
+      {
+        <path
+          key="x-axis-path"
+          d={`M 0 ${dimensions.boundedHeight} H ${dimensions.boundedHeight} ${dimensions.boundedWidth}`}
+          stroke="black"
+          fill="none"
+          strokeWidth="1"
+        ></path>
+      }
+      {xAxisTicksGenerator().map((tick) => (
+        <React.Fragment key={'x-' + tick.month}>
+          <text
+            key={'x' + tick.month + '-text'}
+            x={tick.scaledValue}
+            y={dimensions.boundedHeight + 17}
+            style={{
+              fontSize: '10px',
+              textAnchor: 'middle',
+            }}
+          >
+            {' '}
+            {tick.month}{' '}
+          </text>
 
-                  <line
-                    key={ tick.text + "-line" }
-                    x1={ 0 }
-                    y1={ tick.scaledValue }
-                    x2={ -5 }
-                    y2={ tick.scaledValue }
-                    stroke='black'
-                  />
-                </>
-              )
-            }
-            {/* Desenhando a linha do eixo X */}
-            {
-              <path
-                d={ `M 0 ${dimensions.boundedHeight} H ${dimensions.boundedHeight} ${dimensions.boundedWidth}` }
-                stroke="black"
-                fill="none"
-                strokeWidth="1"
-              >
+          <line
+            key={'x' + tick.month + '-line'}
+            x1={tick.scaledValue}
+            y1={dimensions.boundedHeight}
+            x2={tick.scaledValue}
+            y2={dimensions.boundedHeight + 5}
+            stroke="black"
+          />
+        </React.Fragment>
+      ))}
+    </>
+  );
+};
 
-              </path>
-            }
-            {
-              xAxisTicksGenerator().map(tick =>
-                <>
-                  <text key={ tick.month + "-text" }
-                        x={ tick.scaledValue }
-                        y={ dimensions.boundedHeight + 17 }
-                        style={{
-                          fontSize: "10px",
-                          textAnchor: "middle"
-                        }}> { tick.month } </text>
-
-                  <line
-                    key={ tick.month + "-line" }
-                    x1={ tick.scaledValue }
-                    y1={ dimensions.boundedHeight }
-                    x2={ tick.scaledValue }
-                    y2={ dimensions.boundedHeight + 5 }
-                    stroke='black'
-                  />
-                </>
-              )
-            }
-        </>
-    )
-}
+WrapperChart.propTypes = {
+  dimensions: PropTypes.shape({
+    width: PropTypes.number,
+    height: PropTypes.number,
+    boundedHeight: PropTypes.number,
+    boundedWidth: PropTypes.number,
+    margin: PropTypes.shape({
+      top: PropTypes.number,
+      right: PropTypes.number,
+      bottom: PropTypes.number,
+      left: PropTypes.number,
+    }),
+  }).isRequired,
+  xScale: PropTypes.func.isRequired,
+  yScale: PropTypes.func.isRequired,
+  selectYear: PropTypes.number,
+};

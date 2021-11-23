@@ -37,7 +37,6 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
     <>
       {
         <text
-          key="y-legend"
           x={-35}
           y={dimensions.boundedHeight / 2}
           style={{
@@ -52,7 +51,6 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
       }
       {
         <text
-          key="chart-title"
           x={dimensions.boundedWidth / 2}
           y={10}
           style={{
@@ -65,20 +63,11 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
         </text>
       }
       {/* Desenhando a linha do eixo Y */}
-      {
-        <path
-          key="y-axis-path"
-          d={`M 0 0 L 0 ${dimensions.boundedHeight}`}
-          stroke="black"
-          fill="none"
-          strokeWidth="1"
-        ></path>
-      }
+      {<path d={`M 0 0 L 0 ${dimensions.boundedHeight}`} stroke="black" fill="none" strokeWidth="1"></path>}
 
       {yAxisTicksGenerator().map((tick) => (
         <React.Fragment key={'y-' + tick.text}>
           <text
-            key={'y' + tick.text + '-text'}
             x={-15}
             y={tick.scaledValue + 3}
             style={{
@@ -89,20 +78,12 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
             {tick.text}
           </text>
 
-          <line
-            key={'y' + tick.text + '-line'}
-            x1={0}
-            y1={tick.scaledValue}
-            x2={-5}
-            y2={tick.scaledValue}
-            stroke="black"
-          />
+          <line x1={0} y1={tick.scaledValue} x2={-5} y2={tick.scaledValue} stroke="black" />
         </React.Fragment>
       ))}
       {/* Desenhando a linha do eixo X */}
       {
         <path
-          key="x-axis-path"
           d={`M 0 ${dimensions.boundedHeight} H ${dimensions.boundedHeight} ${dimensions.boundedWidth}`}
           stroke="black"
           fill="none"
@@ -112,7 +93,6 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
       {xAxisTicksGenerator().map((tick) => (
         <React.Fragment key={'x-' + tick.month}>
           <text
-            key={'x' + tick.month + '-text'}
             x={tick.scaledValue}
             y={dimensions.boundedHeight + 17}
             style={{
@@ -120,12 +100,10 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
               textAnchor: 'middle',
             }}
           >
-            {' '}
-            {tick.month}{' '}
+            {tick.month}
           </text>
 
           <line
-            key={'x' + tick.month + '-line'}
             x1={tick.scaledValue}
             y1={dimensions.boundedHeight}
             x2={tick.scaledValue}

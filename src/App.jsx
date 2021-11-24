@@ -12,6 +12,7 @@ class App extends Component {
     allData: [],
     temperatures: [],
     selectYear: 2020,
+    temperatureType: 'mean_temperature',
   };
 
   componentDidMount() {
@@ -20,7 +21,7 @@ class App extends Component {
 
   loadDataSet = async () => {
     const dataset = await d3.csv('./data/floripa_temperatures_by_day_2004_to_2020.csv');
-    const temperatures = dataset.map((row) => {
+    const allData = dataset.map((row) => {
       return {
         mean_temperature: parseFloat(row.mean_temperature).toFixed(2),
         max_temperature: parseFloat(row.max_temperature).toFixed(2),
@@ -28,9 +29,10 @@ class App extends Component {
         date: new Date(row.date),
       };
     });
+    const temperatures = allData.filter((d) => d.date.getFullYear() === this.state.selectYear);
     this.setState({
-      allData: temperatures,
-      temperatures: temperatures.filter((d) => d.date.getFullYear() === this.state.selectYear),
+      allData: allData,
+      temperatures: temperatures,
       isFechting: false,
     });
   };
@@ -43,11 +45,16 @@ class App extends Component {
     });
   };
 
+  handleTemperatureTypeChoice = (event) => {
+    const temperatureType = event.target.value;
+    this.setState({ temperatureType: temperatureType });
+  };
+
   render() {
     const { selectYear, temperatures, isFechting } = this.state;
     let dimensions = {
       width: window.innerWidth * 0.9,
-      height: 400,
+      height: 300,
       margin: {
         top: 15,
         right: 15,
@@ -55,7 +62,7 @@ class App extends Component {
         left: 60,
       },
     };
-    const columns = ['mean_temperature']; //, 'max_temperature', 'min_temperature'];
+
     const years = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'].sort(
       (a, b) => b - a,
     );
@@ -83,10 +90,20 @@ class App extends Component {
       <>
         <div className="chartContainer">
           <div className="choicesContainer">
-            {['Max', 'Min', 'Avg'].map((lbl) => (
-              <label key={lbl + '-label'}>
-                <input type="checkbox" />
-                {lbl}
+            {[
+              ['Máxima', 'max_temperature'],
+              ['Mínima', 'min_temperature'],
+              ['Média', 'mean_temperature'],
+            ].map((lbl) => (
+              <label key={lbl[0] + '-label'}>
+                <input
+                  type="radio"
+                  name="choice-temperature-type"
+                  value={lbl[1]}
+                  onChange={this.handleTemperatureTypeChoice}
+                  checked={lbl[1] === this.state.temperatureType}
+                />
+                {lbl[0]}
               </label>
             ))}
             <select name="Years" className="selectorContainer" onChange={this.handleYearChoice}>
@@ -101,15 +118,13 @@ class App extends Component {
             <g style={styles}>
               {/*The wrapper contains the entire chart: the data elements, the axes, the labels, etc.*/}
               <WrapperChart selectYear={selectYear} xScale={xScale} yScale={yScale} dimensions={dimensions} />
-              {columns.map((temperatureKind) => (
-                <BoundsChart
-                  key={temperatureKind}
-                  temperatures={temperatures}
-                  xScale={xScale}
-                  yScale={yScale}
-                  temperatureKind={temperatureKind}
-                />
-              ))}
+
+              <BoundsChart
+                temperatures={temperatures}
+                xScale={xScale}
+                yScale={yScale}
+                temperatureType={this.state.temperatureType}
+              />
             </g>
           </svg>
         </div>

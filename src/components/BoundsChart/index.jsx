@@ -1,25 +1,16 @@
-import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import Tippy from '@tippyjs/react';
 import './styles.css';
 import 'tippy.js/dist/tippy.css';
 
-export const BoundsChart = ({ temperatures, xScale, yScale, temperatureKind = 'mean_temperature' }) => {
-  const [maxToolTipExist, setMaxToolTipExist] = useState(false);
-
-  const strokeColor =
-    temperatureKind === 'min_temperature' ? '#34cfeb' : temperatureKind === 'max_temperature' ? '#f5390a' : '#af9358';
-
-  const yAccessor = (d) => d[temperatureKind];
-
-  const [minTemperature, maxTemperature] = d3.extent(temperatures, yAccessor);
+export const BoundsChart = ({ temperatures, xScale, yScale, temperatureType = 'mean_temperature' }) => {
+  const strokeColor = '#af9358';
 
   const linePathGenerator = (temperatures) => {
-    let path = `M ${xScale(temperatures[0].date)} ${yScale(temperatures[0][temperatureKind])}`;
+    let path = `M ${xScale(temperatures[0].date)} ${yScale(temperatures[0][temperatureType])}`;
     for (let i = 1; i < temperatures.length; i++) {
       let row = temperatures[i];
-      path += ` L ${xScale(row.date)} ${yScale(row[temperatureKind])}`;
+      path += ` L ${xScale(row.date)} ${yScale(row[temperatureType])}`;
     }
     return path;
   };
@@ -30,37 +21,56 @@ export const BoundsChart = ({ temperatures, xScale, yScale, temperatureKind = 'm
     return [date.getFullYear(), mnth, day].join('-');
   };
 
+  const handleDecimalPlaces = (value) => {
+    const splitedNumber = value.split('.');
+    if (splitedNumber.length > 1) {
+      const decimalPlaces = splitedNumber[1];
+      value = decimalPlaces.length >= 2 ? value : value + '0';
+    } else {
+      value = splitedNumber[0] + '.00';
+    }
+    return value;
+  };
+
+  const findMinAndMax = (temperatures) => {
+    const temperaturesValues = temperatures.map((d) => d[temperatureType]);
+    let max = Math.max(...temperaturesValues).toString();
+    max = handleDecimalPlaces(max);
+    const indexMax = temperaturesValues.indexOf(max);
+    let min = Math.min(...temperaturesValues).toString();
+    min = handleDecimalPlaces(min);
+    const indexMin = temperaturesValues.indexOf(min);
+    return [
+      [temperatures[indexMin], 'min'],
+      [temperatures[indexMax], 'max'],
+    ];
+  };
+
+  const minAndMaxTemperatures = findMinAndMax(temperatures);
   return (
     <>
       <path d={linePathGenerator(temperatures)} fill="none" stroke={strokeColor} strokeWidth="2"></path>
-      {temperatures.map((d) => {
-        if (d[temperatureKind] === maxTemperature && maxToolTipExist === false) {
-          setMaxToolTipExist(true);
-          return (
-            <Tippy
-              key={'max-tooltip-' + temperatureKind}
-              content={`Temperatura: ${d[temperatureKind]} °C Data: ${dateConvertStringFormat(d.date)}`}
-            >
-              <circle cx={xScale(d.date)} cy={yScale(d[temperatureKind])} r="3" fill="#de5454" />
-            </Tippy>
-          );
-        } else if (d[temperatureKind] === minTemperature) {
-          return (
-            <Tippy
-              key={'min-tooltip-' + temperatureKind}
-              content={`Temperatura: ${d[temperatureKind]} °C Data: ${dateConvertStringFormat(d.date)}`}
-            >
-              <circle cx={xScale(d.date)} cy={yScale(d[temperatureKind])} r="3" fill="#5e9de6" />
-            </Tippy>
-          );
-        }
+      {minAndMaxTemperatures.map((d) => {
+        return (
+          <Tippy
+            key={`${d[1]}-tooltip`}
+            content={`Temperatura: ${d[0][temperatureType]} Data: ${dateConvertStringFormat(d[0].date)}`}
+          >
+            <circle
+              cx={xScale(d[0].date)}
+              cy={yScale(d[0][temperatureType])}
+              r="3"
+              fill={d[1] === 'max' ? '#de5454' : '#1089c9'}
+            />
+          </Tippy>
+        );
       })}
     </>
   );
 };
 
 BoundsChart.defaultProps = {
-  temperatureKind: 'mean_temperature',
+  temperatureType: 'mean_temperature',
 };
 
 BoundsChart.propTypes = {
@@ -74,5 +84,5 @@ BoundsChart.propTypes = {
   ).isRequired,
   xScale: PropTypes.func.isRequired,
   yScale: PropTypes.func.isRequired,
-  temperatureKind: PropTypes.string,
+  temperatureType: PropTypes.string,
 };

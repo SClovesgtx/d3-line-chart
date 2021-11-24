@@ -124,6 +124,7 @@ class App extends Component {
                 xScale={xScale}
                 yScale={yScale}
                 temperatureType={this.state.temperatureType}
+                dimensions={dimensions}
               />
             </g>
           </svg>

@@ -11,7 +11,13 @@ export const LineChart = ({ dimensions, temperatures, temperatureType, yScale, s
     <svg width={dimensions.width} height={dimensions.height}>
       <g style={styles}>
         {/*The wrapper contains the entire chart: the data elements, the axes, the labels, etc.*/}
-        <WrapperChart temperatures={temperatures} selectYear={selectYear} yScale={yScale} dimensions={dimensions} />
+        <WrapperChart
+          temperatures={temperatures}
+          temperatureType={temperatureType}
+          selectYear={selectYear}
+          yScale={yScale}
+          dimensions={dimensions}
+        />
 
         <BoundsChart
           temperatures={temperatures}

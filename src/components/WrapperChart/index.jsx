@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import * as d3 from 'd3';
 
-export const WrapperChart = ({ temperatures, selectYear, yScale, dimensions }) => {
+export const WrapperChart = ({ temperatures, temperatureType, selectYear, yScale, dimensions }) => {
+  const legend =
+    temperatureType == 'mean_temperature' ? 'Médias' : temperatureType == 'max_temperature' ? 'Máximas' : 'Mínimas';
   const xAccessor = (d) => d.date;
   const xScale = d3.scaleTime().domain(d3.extent(temperatures, xAccessor)).range([0, dimensions.boundedWidth]);
   const yAxisTicksGenerator = () => {
@@ -62,7 +64,7 @@ export const WrapperChart = ({ temperatures, selectYear, yScale, dimensions }) =
             fontFamily: 'Playfair Display',
           }}
         >
-          {selectYear}
+          Temperaturas {legend} de Florianópolis em {selectYear}
         </text>
       }
       {/* Desenhando a linha do eixo Y */}
@@ -120,6 +122,7 @@ export const WrapperChart = ({ temperatures, selectYear, yScale, dimensions }) =
 };
 
 WrapperChart.propTypes = {
+  temperatureType: PropTypes.string.isRequired,
   temperatures: PropTypes.arrayOf(
     PropTypes.shape({
       date: PropTypes.date,

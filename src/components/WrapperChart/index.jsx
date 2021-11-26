@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import * as d3 from 'd3';
 
-export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
+export const WrapperChart = ({ temperatures, selectYear, yScale, dimensions }) => {
+  const xAccessor = (d) => d.date;
+  const xScale = d3.scaleTime().domain(d3.extent(temperatures, xAccessor)).range([0, dimensions.boundedWidth]);
   const yAxisTicksGenerator = () => {
     const ticks = yScale.ticks();
     const reversedTicks = [...ticks].sort((a, b) => a - b);
@@ -37,10 +40,10 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
     <>
       {
         <text
-          x={-35}
+          x={-40}
           y={dimensions.boundedHeight / 2}
           style={{
-            fontSize: '12px',
+            fontSize: '15px',
             fontFamily: 'Droid serif',
             fontStyle: 'italic',
             textAnchor: 'middle',
@@ -55,7 +58,7 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
           y={10}
           style={{
             textAnchor: 'middle',
-            fontSize: '16px',
+            fontSize: '25px',
             fontFamily: 'Playfair Display',
           }}
         >
@@ -71,7 +74,7 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
             x={-15}
             y={tick.scaledValue + 3}
             style={{
-              fontSize: '10px',
+              fontSize: '15px',
               textAnchor: 'middle',
             }}
           >
@@ -96,7 +99,7 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
             x={tick.scaledValue}
             y={dimensions.boundedHeight + 17}
             style={{
-              fontSize: '10px',
+              fontSize: '15px',
               textAnchor: 'middle',
             }}
           >
@@ -117,6 +120,14 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
 };
 
 WrapperChart.propTypes = {
+  temperatures: PropTypes.arrayOf(
+    PropTypes.shape({
+      date: PropTypes.date,
+      mean_temperature: PropTypes.string,
+      min_temperature: PropTypes.string,
+      max_temperature: PropTypes.string,
+    }),
+  ).isRequired,
   dimensions: PropTypes.shape({
     width: PropTypes.number,
     height: PropTypes.number,
@@ -129,7 +140,6 @@ WrapperChart.propTypes = {
       left: PropTypes.number,
     }),
   }).isRequired,
-  xScale: PropTypes.func.isRequired,
   yScale: PropTypes.func.isRequired,
   selectYear: PropTypes.number,
 };

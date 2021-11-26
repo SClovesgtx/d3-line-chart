@@ -67,7 +67,7 @@ class App extends Component {
     const { temperatureType, selectYear1, selectYear2, temperaturesYear1, temperaturesYear2, isFechting } = this.state;
     let dimensions = {
       width: window.innerWidth * 0.9,
-      height: 250,
+      height: 400,
       margin: {
         top: 15,
         right: 15,
@@ -84,14 +84,10 @@ class App extends Component {
 
     dimensions.boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
 
-    const xAccessor = (d) => d.date;
-
     const yScale = d3
       .scaleLinear()
       .domain([0, 50]) // min and max values of temperatures
       .range([dimensions.boundedHeight, 0]); // max and min values of the axis
-
-    const xScale = d3.scaleTime().domain(d3.extent(temperaturesYear1, xAccessor)).range([0, dimensions.boundedWidth]);
 
     return isFechting ? (
       <p>Loading...</p>
@@ -110,7 +106,6 @@ class App extends Component {
             selectYear={selectYear1}
             temperatureType={temperatureType}
             temperatures={temperaturesYear1}
-            xScale={xScale}
             yScale={yScale}
           />
           <div className="choicesContainer">
@@ -121,7 +116,6 @@ class App extends Component {
             selectYear={selectYear2}
             temperatureType={temperatureType}
             temperatures={temperaturesYear2}
-            xScale={xScale}
             yScale={yScale}
           />
         </div>

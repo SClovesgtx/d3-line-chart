@@ -59,7 +59,7 @@ export const WrapperChart = ({ selectYear, xScale, yScale, dimensions }) => {
             fontFamily: 'Playfair Display',
           }}
         >
-          Temperaturas de Florianópolis em {selectYear}
+          {selectYear}
         </text>
       }
       {/* Desenhando a linha do eixo Y */}

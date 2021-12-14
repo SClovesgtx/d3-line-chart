@@ -7,6 +7,7 @@ import * as d3 from 'd3';
 import './App.css';
 import 'tippy.js/dist/tippy.css';
 
+// change
 class App extends Component {
   state = {
     isFechting: true,
